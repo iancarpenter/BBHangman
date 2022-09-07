@@ -1,0 +1,11 @@
+The Game picks a random word from a list of words --> done
+
+The games state is displayed to the player as shown
+
+The player can pick a letter If they pick a letter they have already chose, pick again 
+
+The game should update its state based on the letter the player picked 
+
+The game needs to detect a win for the player all letters have been guess
+
+The game needs to detect a loss for the player
