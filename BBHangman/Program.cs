@@ -24,35 +24,41 @@
                 do
                 {
                     Console.WriteLine("Choose a letter");
+                                       
+                    playersGuess = Console.ReadLine();
                     
+                    letterUsed = player.LetterAlreadyUsed(playersGuess);
+
                     if (letterUsed)
                     {
                         Console.WriteLine("That letter has been used already");
                     }
-                    
-                    playersGuess = Console.ReadLine();
-                    
-                    letterUsed = player.LetterAlreadyUsed(playersGuess);                    
+
+
                 }
                 while (letterUsed);
                 
                 int charactersLeftToGuess = 0;
-            
+
+                string board = "";
+
                 foreach (var character in game.TheWord)
                 {
                     var letter = character.ToString();
                     
                     if (player.Guesses.Contains(letter))
                     {
-                        Console.Write($"{letter}");
+                        board += letter;
                     }
                     else
-                    {
-                        Console.Write("_");
+                    {                        
+                        board += '_';
                         charactersLeftToGuess++;
                     }
-
                 }
+
+                Console.WriteLine($"{board}");
+                
                 Console.WriteLine(string.Empty);
 
                 if (!game.TheWord.Contains(playersGuess))
@@ -72,13 +78,14 @@
                 }                
                 
             }
+
             if (playerWon)
             {
-                Console.WriteLine("Congratulations Player, you have won");
+                Console.WriteLine($"Congratulations {player.name}, you have won");
             }
             else
             {
-                Console.WriteLine("you have lost!");
+                Console.WriteLine($"Sorry {player.name} you have lost");
             }
         }                        
      }
@@ -133,18 +140,6 @@
             int rInt = r.Next(0, 5);
             
             this.TheWord = availableWords[rInt];
-        }
-
-        public string ShowTheGame(string word)
-        {
-            string formatWord = "";
-
-            foreach(int letter in word)
-            {
-                formatWord += "_ ";
-            }
-
-            return formatWord;
         }
                    
     }
