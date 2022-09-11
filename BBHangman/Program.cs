@@ -13,7 +13,7 @@
 
             bool playerWon = false;
 
-            // whilst user still has remaining
+            // play continues until the player has run out of lives
             while (player.NumberOfIncorrectGuesses() > 0)
             {                
                 bool letterUsed = false;
@@ -26,15 +26,16 @@
                     Console.WriteLine("Choose a letter");
                                        
                     playersGuess = Console.ReadLine();
-                    
+
+                    // To do: check that the user has enter a letter a - z only
+                    playersGuess = playersGuess.ToLower();
+
                     letterUsed = player.LetterAlreadyUsed(playersGuess);
 
                     if (letterUsed)
                     {
                         Console.WriteLine("That letter has been used already");
                     }
-
-
                 }
                 while (letterUsed);
                 
@@ -45,19 +46,19 @@
                 foreach (var character in game.TheWord)
                 {
                     var letter = character.ToString();
-                    
+
                     if (player.Guesses.Contains(letter))
                     {
                         board += letter;
                     }
                     else
-                    {                        
+                    {
                         board += '_';
                         charactersLeftToGuess++;
                     }
                 }
 
-                Console.WriteLine($"{board}");
+                //Console.WriteLine($"{board}");
                 
                 Console.WriteLine(string.Empty);
 
@@ -67,28 +68,21 @@
                 }
 
                 // display the board
-                //Console.WriteLine($"Word: {game.ShowTheGame(game.TheWord)} | Remaining: {player.NumberOfIncorrectGuesses()}  | Incorrect: | Guess: ");
-
-                Console.WriteLine($"Characters left to guess {charactersLeftToGuess}");
-                Console.WriteLine($"The player has {player.NumberOfIncorrectGuesses()} lives remaining");
+                Console.WriteLine($"Word: {board} | Remaining: {player.NumberOfIncorrectGuesses()}  | Incorrect: | Guess: {playersGuess} ");
+                
+                Console.WriteLine($"{player.NumberOfIncorrectGuesses()} lives remaining");
+                
                 if (charactersLeftToGuess == 0)
                 {
                     playerWon = true;
                     break;
-                }                
-                
+                }                                
             }
 
-            if (playerWon)
-            {
-                Console.WriteLine($"Congratulations {player.name}, you have won");
-            }
-            else
-            {
-                Console.WriteLine($"Sorry {player.name} you have lost");
-            }
-        }                        
-     }
+            game.Results(playerWon, player.name);
+        }
+        
+    }
 }
 
     public class Player
@@ -124,6 +118,7 @@
         {
             _numberOfIncorrectGuesses--;           
         }
+        
     }
 
     public class Game
@@ -141,5 +136,16 @@
             
             this.TheWord = availableWords[rInt];
         }
-                   
+
+        public void Results(bool playerWon, string playersName)
+        {
+           if (playerWon)
+           {
+              Console.WriteLine($"Congratulations {playersName}, you have won");
+           }
+           else
+           {
+              Console.WriteLine($"Sorry {playersName} you have lost");
+           }
+        }
     }
