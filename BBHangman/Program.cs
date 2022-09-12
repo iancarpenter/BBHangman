@@ -24,9 +24,7 @@ namespace BBHangman
                 {
                     Console.WriteLine("Choose a letter");
 
-                    playersGuess = Console.ReadLine();
-
-                    playersGuess = playersGuess.ToLower();
+                    playersGuess = Console.ReadLine().ToLower();
 
                     validInput = IsUserInputValid(player, playersGuess);
                 }
