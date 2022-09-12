@@ -16,8 +16,7 @@ namespace BBHangman
 
             // play continues until the player has run out of lives
             while (player.NumberOfIncorrectGuesses() > 0)
-            {                
-                bool letterUsed = false;
+            {                                
                 string? playersGuess = "";
             
                 do
