@@ -7,47 +7,30 @@ namespace BBHangman
         static void Main(string[] args)
         {                        
             Player player = new Player("Player1");
-
             Game game = new Game();
-            
-            Console.WriteLine($"The word is {game.TheWord}");
 
             bool playerWon = false;
+            bool validInput = false;
+
+            Console.WriteLine($"The word is {game.TheWord}");
 
             // play continues until the player has run out of lives
             while (player.NumberOfIncorrectGuesses() > 0)
             {                
                 bool letterUsed = false;
                 string? playersGuess = "";
-                Match m;
-                // user has a guess, check to make sure the user hasn't already used this letter
-                // if letter has been used ask the user to choose a different one
+            
                 do
                 {
                     Console.WriteLine("Choose a letter");
-                                       
+
                     playersGuess = Console.ReadLine();
 
                     playersGuess = playersGuess.ToLower();
 
-                    string pattern = "[a-z]";
-
-                    m = Regex.Match(playersGuess, pattern);
-
-                    if (!m.Success)
-                    {
-                        Console.WriteLine($"Please enter a letter (a - z)");
-                        continue;
-                    }
-
-                    letterUsed = player.LetterAlreadyUsed(playersGuess);
-
-                    if (letterUsed)
-                    {
-                        Console.WriteLine("That letter has been used already");
-                    }
+                    validInput = IsUserInputValid(player, playersGuess);
                 }
-                while (letterUsed || !m.Success);
+                while (!validInput);
                 
                 int charactersLeftToGuess = 0;
 
@@ -86,7 +69,35 @@ namespace BBHangman
 
             game.Results(playerWon, player.name);
         }
-        
+        /// <summary>
+        /// Series of checks to ensure what the user has entered for a guess
+        /// is valid
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="input"></param>
+        /// <returns>True is all the checks pass otherwise returns false</returns>
+        private static bool IsUserInputValid(Player player, string input)
+        {
+            // each guess can only be one character
+            if (input.Length != 1)
+            {
+                Console.WriteLine("One character at a time please!");
+                return false;
+            }
+            // only letters a - z
+            else if (!Regex.IsMatch(input, "[a-z]"))
+            {
+                Console.WriteLine($"Please enter a letter (a - z)");
+                return false;
+            }
+            // has this letter already been used
+            else if (player.LetterAlreadyUsed(input))
+            {
+                Console.WriteLine("That letter has been used already");
+                return false;
+            }
+            return true;
+        }
     }
 }
 
