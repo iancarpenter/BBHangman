@@ -1,10 +1,11 @@
-﻿namespace BBHangman
+﻿using System.Text.RegularExpressions;
+
+namespace BBHangman
 {
     internal class Program
     {
         static void Main(string[] args)
-        {
-                        
+        {                        
             Player player = new Player("Player1");
 
             Game game = new Game();
@@ -18,7 +19,7 @@
             {                
                 bool letterUsed = false;
                 string? playersGuess = "";
-                
+                Match m;
                 // user has a guess, check to make sure the user hasn't already used this letter
                 // if letter has been used ask the user to choose a different one
                 do
@@ -27,8 +28,17 @@
                                        
                     playersGuess = Console.ReadLine();
 
-                    // To do: check that the user has enter a letter a - z only
                     playersGuess = playersGuess.ToLower();
+
+                    string pattern = "[a-z]";
+
+                    m = Regex.Match(playersGuess, pattern);
+
+                    if (!m.Success)
+                    {
+                        Console.WriteLine($"Please enter a letter (a - z)");
+                        continue;
+                    }
 
                     letterUsed = player.LetterAlreadyUsed(playersGuess);
 
@@ -37,7 +47,7 @@
                         Console.WriteLine("That letter has been used already");
                     }
                 }
-                while (letterUsed);
+                while (letterUsed || !m.Success);
                 
                 int charactersLeftToGuess = 0;
 
@@ -57,8 +67,6 @@
                         charactersLeftToGuess++;
                     }
                 }
-
-                //Console.WriteLine($"{board}");
                 
                 Console.WriteLine(string.Empty);
 
@@ -67,11 +75,8 @@
                     player.IncorrectGuess();
                 }
 
-                // display the board
                 Console.WriteLine($"Word: {board} | Remaining: {player.NumberOfIncorrectGuesses()}  | Incorrect: | Guess: {playersGuess} ");
-                
-                Console.WriteLine($"{player.NumberOfIncorrectGuesses()} lives remaining");
-                
+                               
                 if (charactersLeftToGuess == 0)
                 {
                     playerWon = true;
