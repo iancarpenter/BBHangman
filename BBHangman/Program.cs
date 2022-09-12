@@ -26,6 +26,7 @@ namespace BBHangman
 
                     playersGuess = Console.ReadLine().ToLower();
 
+
                     validInput = IsUserInputValid(player, playersGuess);
                 }
                 while (!validInput);
