@@ -15,7 +15,8 @@ namespace BBHangman
             Console.WriteLine($"The word is {game.TheWord}");
 
             // play continues until the player has run out of lives
-            while (player.NumberOfIncorrectGuesses() > 0)
+            //while (player.NumberOfIncorrectGuesses() > 0)
+            while (player.NumberOfIncorrectGuesses() < player.maxNumberOfGuesses)
             {                                
                 string? playersGuess = "";
             
@@ -54,6 +55,9 @@ namespace BBHangman
                 if (!game.TheWord.Contains(playersGuess))
                 {
                     player.IncorrectGuess();
+
+                    Console.WriteLine($"{game.ShowHangman(player.NumberOfIncorrectGuesses())}");                    
+                    
                 }
 
                 Console.WriteLine($"Word: {board} | Remaining: {player.NumberOfIncorrectGuesses()}  | Incorrect: | Guess: {playersGuess} ");
@@ -105,14 +109,18 @@ namespace BBHangman
         public List<string> Guesses { get => _guesses; }
         public string name { get; set; }
 
-        private int _numberOfIncorrectGuesses;
-        public int NumberOfIncorrectGuesses() => _numberOfIncorrectGuesses;
+        public int maxNumberOfGuesses { get; }
 
-        public Player(string name, int defaultNumberOfGuesses = 5)
+        private int _incorrectGuess;
+        public int NumberOfIncorrectGuesses() => _incorrectGuess;
+
+        public Player(string name, int maxNumberOfGuesses = 7)
         {
             this.name = name;
 
-            this._numberOfIncorrectGuesses = defaultNumberOfGuesses;
+            this._incorrectGuess = 0;
+            
+            this.maxNumberOfGuesses = maxNumberOfGuesses;
         }
 
         public bool LetterAlreadyUsed(string letter)
@@ -130,14 +138,14 @@ namespace BBHangman
 
         public void IncorrectGuess()
         {
-            _numberOfIncorrectGuesses--;           
+            _incorrectGuess++;           
         }
         
     }
 
     public class Game
     {
-        List<string> availableWords = new List<string>() { "plain", "nut", "milk", "peppermint", "orange", "caramel" };
+        List<string> availableWords = new List<string>() { "beantobar", "coconut", "tufftoffee", "peppermint", "orangecreme", "caramel" };
 
         public string TheWord { get; }
 
@@ -162,4 +170,20 @@ namespace BBHangman
               Console.WriteLine($"Sorry {playersName} you have lost");
            }
         }
+
+        private List<string> hangManGraphic = new List<string>() { "+---+\r\n  |   |\r\n      |\r\n      |\r\n      |\r\n      |\r\n=========",
+                                                                   "+---+\r\n  |   |\r\n  O   |\r\n      |\r\n      |\r\n      |\r\n=========",
+                                                                   "+---+\r\n  |   |\r\n  O   |\r\n  |   |\r\n      |\r\n      |\r\n=========",
+                                                                   "+---+\r\n  |   |\r\n  O   |\r\n /|   |\r\n      |\r\n      |\r\n=========",
+                                                                   "+---+\r\n  |   |\r\n  O   |\r\n /|\\  |\r\n      |\r\n      |\r\n=========",
+                                                                   "+---+\r\n  |   |\r\n  O   |\r\n /|\\  |\r\n /    |\r\n      |\r\n=========",
+                                                                   "+---+\r\n  |   |\r\n  O   |\r\n /|\\  |\r\n / \\  |\r\n      |\r\n=========",
+        };
+        
+        public string ShowHangman (int pictureNumber)
+        {
+           //var descendingOrder = hangManGraphic.OrderByDescending(i => pictureNumber);
+           return hangManGraphic[--pictureNumber];
+        }
+
     }
