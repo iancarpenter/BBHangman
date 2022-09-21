@@ -25,7 +25,6 @@ namespace BBHangman
 
                     playersGuess = Console.ReadLine().ToLower();
 
-
                     validInput = IsUserInputValid(player, playersGuess);
                 }
                 while (!validInput);
@@ -44,7 +43,7 @@ namespace BBHangman
                     }
                     else
                     {
-                        board += '_';
+                        board += '-';
                         charactersLeftToGuess++;
                     }
                 }
@@ -69,6 +68,7 @@ namespace BBHangman
 
             game.Results(playerWon, player.name);
         }
+
         /// <summary>
         /// Series of checks to ensure what the user has entered for a guess
         /// is valid
@@ -133,30 +133,22 @@ public class Player
             return false;
         }
     }
-
     public void IncorrectGuess()
     {
         _incorrectGuess++;           
-    }
-        
+    }        
 }
 
 public class Game
 {
-    List<string> availableWords = new List<string>() { "beantobar", "coconut", "tufftoffee", "peppermint", "orangecreme", "caramel" };
-    
+    List<string> availableWords = new List<string>() { "beantobar", "coconut", "tufftoffee", "peppermint", "orangecreme", "caramel" };    
     public string TheWord { get; }
-
     public Game()
-    {
-            
+    {            
         Random r = new Random();
-
-        int rInt = r.Next(0, 6);
-            
+        int rInt = r.Next(0, 6);            
         this.TheWord = availableWords[rInt];
     }
-
     public void Results(bool playerWon, string playersName)
     {
         if (playerWon)
