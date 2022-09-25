@@ -177,9 +177,7 @@ public class Game
         
     public string ShowHangman (int pictureNumber)
     {
-        int i = pictureNumber >= 0 ? pictureNumber : 0;
-        
-        return hangManGraphic[i];
+        return hangManGraphic[pictureNumber];
     }
 
 }
