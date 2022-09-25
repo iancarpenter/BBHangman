@@ -14,8 +14,8 @@ namespace BBHangman
 
             Console.WriteLine($"The word is {game.TheWord}");
 
-            // play continues until the player has run out of lives            
-            while (player.NumberOfIncorrectGuesses() < player.maxNumberOfGuesses)
+            // play continues until the player has won or run out of guesses             
+            while (player.NumberOfIncorrectGuesses() < player.maxNumberOfGuesses && playerWon == false)
             {                                
                 string? playersGuess = "";
             
@@ -56,13 +56,11 @@ namespace BBHangman
                 }
 
                 Console.WriteLine($"{game.ShowHangman(player.NumberOfIncorrectGuesses())}");
-
                 Console.WriteLine($"Word: {board}");
                                
                 if (charactersLeftToGuess == 0)
                 {
                     playerWon = true;
-                    break;
                 }                                
             }
 
@@ -172,13 +170,8 @@ public class Game
         
     public string ShowHangman (int pictureNumber)
     {
-        int i = pictureNumber;
-
-        if (i < 0)
-        {
-            i = 0;
-        }
-
+        int i = pictureNumber >= 0 ? pictureNumber : 0;
+        
         return hangManGraphic[i];
     }
 
