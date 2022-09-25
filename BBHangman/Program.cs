@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace BBHangman
 {
@@ -10,24 +11,13 @@ namespace BBHangman
             Game game = new Game();
 
             bool playerWon = false;
-            bool validInput = false;
-
+           
             Console.WriteLine($"The word is {game.TheWord}");
 
-            // play continues until the player has won or run out of guesses             
+            // play continues until the player wins or run out of guesses             
             while (player.NumberOfIncorrectGuesses() < player.maxNumberOfGuesses && playerWon == false)
-            {                                
-                string? playersGuess = "";
-            
-                do
-                {
-                    Console.WriteLine("Choose a letter");
-
-                    playersGuess = Console.ReadLine().ToLower();
-
-                    validInput = IsUserInputValid(player, playersGuess);
-                }
-                while (!validInput);
+            {
+                string? playersGuess = GetPlayersGuess(player); // "";            
                 
                 int charactersLeftToGuess = 0;
 
@@ -63,8 +53,25 @@ namespace BBHangman
                     playerWon = true;
                 }                                
             }
-
             game.Results(playerWon, player.name);
+        }
+
+        private static string? GetPlayersGuess(Player player)
+        {
+            string? playersGuess;
+            bool validInput = false;
+            
+            do
+            {
+                Console.WriteLine("Choose a letter");
+
+                playersGuess = Console.ReadLine().ToLower();
+
+                validInput = IsUserInputValid(player, playersGuess);
+            }
+            while (!validInput);
+
+            return playersGuess;
         }
 
         /// <summary>
