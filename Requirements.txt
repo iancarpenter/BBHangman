@@ -1,4 +1,4 @@
-The Game picks a random word from a list of words --> done
+The Game picks a random word from a list
 
 The games state is displayed to the player as shown
 
