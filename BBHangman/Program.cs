@@ -1,150 +1,189 @@
-﻿namespace BBHangman
+﻿using System.Text.RegularExpressions;
+
+namespace BBHangman
 {
     internal class Program
     {
         static void Main(string[] args)
-        {
-                        
+        {                        
             Player player = new Player("Player1");
-
-            Game game = new Game();
             
-            Console.WriteLine($"The word is {game.TheWord}");
+            Game game = new Game();
 
             bool playerWon = false;
+           
+            Console.WriteLine($"The word is {game.TheWord}");
 
-            // whilst user still has remaining
-            while (player.NumberOfIncorrectGuesses() > 0)
-            {                
-                bool letterUsed = false;
-                string? playersGuess = "";
-                
-                // user has a guess, check to make sure the user hasn't already used this letter
-                // if letter has been used ask the user to choose a different one
-                do
-                {
-                    Console.WriteLine("Choose a letter");
-                    
-                    if (letterUsed)
-                    {
-                        Console.WriteLine("That letter has been used already");
-                    }
-                    
-                    playersGuess = Console.ReadLine();
-                    
-                    letterUsed = player.LetterAlreadyUsed(playersGuess);                    
-                }
-                while (letterUsed);
+            // play continues until the player wins or run out of guesses             
+            while (player.NumberOfIncorrectGuesses() < player.maxNumberOfGuesses && playerWon == false)
+            {
+                string? playersGuess = GetPlayersGuess(player);          
                 
                 int charactersLeftToGuess = 0;
-            
+
+                string board = "";
+
                 foreach (var character in game.TheWord)
                 {
                     var letter = character.ToString();
-                    
+
                     if (player.Guesses.Contains(letter))
                     {
-                        Console.Write($"{letter}");
+                        board += letter;
                     }
                     else
                     {
-                        Console.Write("_");
+                        board += '-';
                         charactersLeftToGuess++;
                     }
-
                 }
+                
                 Console.WriteLine(string.Empty);
 
                 if (!game.TheWord.Contains(playersGuess))
                 {
-                    player.IncorrectGuess();
+                    player.IncorrectGuess();                    
                 }
 
-                // display the board
-                //Console.WriteLine($"Word: {game.ShowTheGame(game.TheWord)} | Remaining: {player.NumberOfIncorrectGuesses()}  | Incorrect: | Guess: ");
-
-                Console.WriteLine($"Characters left to guess {charactersLeftToGuess}");
-                Console.WriteLine($"The player has {player.NumberOfIncorrectGuesses()} lives remaining");
+                Console.WriteLine($"{game.ShowHangman(player.NumberOfIncorrectGuesses())}");
+                Console.WriteLine($"Word: {board}");
+                               
                 if (charactersLeftToGuess == 0)
                 {
                     playerWon = true;
-                    break;
-                }                
-                
+                }                                
             }
-            if (playerWon)
-            {
-                Console.WriteLine("Congratulations Player, you have won");
-            }
-            else
-            {
-                Console.WriteLine("you have lost!");
-            }
-        }                        
-     }
-}
-
-    public class Player
-    {
-        private List<string> _guesses = new List<string>();
-        public List<string> Guesses { get => _guesses; }
-        public string name { get; set; }
-
-        private int _numberOfIncorrectGuesses;
-        public int NumberOfIncorrectGuesses() => _numberOfIncorrectGuesses;
-
-        public Player(string name, int defaultNumberOfGuesses = 5)
-        {
-            this.name = name;
-
-            this._numberOfIncorrectGuesses = defaultNumberOfGuesses;
+            game.Results(playerWon, player.name);
         }
 
-        public bool LetterAlreadyUsed(string letter)
+        /// <summary>
+        /// Asks the player for their guess and checks the guess is 
+        /// one letter, a letter and hasn't already been used
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        private static string? GetPlayersGuess(Player player)
         {
-            if (_guesses.Contains(letter) )
+            string? playersGuess;
+            bool validInput = false;
+            
+            do
             {
-                return true;
+                Console.WriteLine("Choose a letter");
+
+                playersGuess = Console.ReadLine().ToLower();
+
+                validInput = IsUserInputValid(player, playersGuess);
             }
-            else
+            while (!validInput);
+
+            return playersGuess;
+        }
+
+        /// <summary>
+        /// Series of checks to ensure what the user has entered for a guess
+        /// is valid
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="input"></param>
+        /// <returns>True is all the checks pass otherwise returns false</returns>
+        private static bool IsUserInputValid(Player player, string input)
+        {
+            // each guess can only be one character
+            if (input.Length != 1)
             {
-                _guesses.Add(letter);
+                Console.WriteLine("One character at a time please!");
                 return false;
             }
-        }
-
-        public void IncorrectGuess()
-        {
-            _numberOfIncorrectGuesses--;           
-        }
-    }
-
-    public class Game
-    {
-        List<string> availableWords = new List<string>() { "plain", "nut", "milk", "peppermint", "orange", "caramel" };
-
-        public string TheWord { get; }
-
-        public Game()
-        {
-            
-            Random r = new Random();
-
-            int rInt = r.Next(0, 5);
-            
-            this.TheWord = availableWords[rInt];
-        }
-
-        public string ShowTheGame(string word)
-        {
-            string formatWord = "";
-
-            foreach(int letter in word)
+            // only letters a - z
+            else if (!Regex.IsMatch(input, "[a-z]"))
             {
-                formatWord += "_ ";
+                Console.WriteLine($"Please enter a letter (a - z)");
+                return false;
             }
-
-            return formatWord;
+            // has this letter already been used
+            else if (player.LetterAlreadyUsed(input))
+            {
+                Console.WriteLine("That letter has been used already");
+                return false;
+            }
+            return true;
         }
-                   
     }
+}
+
+public class Player
+{
+    private List<string> _guesses = new List<string>();
+    public List<string> Guesses { get => _guesses; }
+    public string name { get; set; }
+
+    public int maxNumberOfGuesses { get; }
+
+    private int _incorrectGuess;
+    public int NumberOfIncorrectGuesses() => _incorrectGuess;
+
+    public Player(string name, int maxNumberOfGuesses = 6)
+    {
+        this.name = name;
+
+        this._incorrectGuess = 0;
+            
+        this.maxNumberOfGuesses = maxNumberOfGuesses;
+    }
+
+    public bool LetterAlreadyUsed(string letter)
+    {
+        if (_guesses.Contains(letter) )
+        {
+            return true;
+        }
+        else
+        {
+            _guesses.Add(letter);
+            return false;
+        }
+    }
+    public void IncorrectGuess()
+    {
+        _incorrectGuess++;           
+    }        
+}
+
+public class Game
+{
+    List<string> availableWords = new List<string>() { "beantobar", "coconut", "tufftoffee", "peppermint", "orangecreme", "caramel" };    
+    public string TheWord { get; }
+    public Game()
+    {            
+        Random r = new Random();
+        int rInt = r.Next(0, 6);            
+        this.TheWord = availableWords[rInt];
+    }
+    public void Results(bool playerWon, string playersName)
+    {
+        if (playerWon)
+        {
+            Console.WriteLine($"Congratulations {playersName}, you have won");
+        }
+        else
+        {
+            Console.WriteLine($"Sorry {playersName} you have lost");
+        }
+    }
+
+    private List<string> hangManGraphic = new List<string>() { "+---+\r\n  |   |\r\n      |\r\n      |\r\n      |\r\n      |\r\n=========",
+                                                               "+---+\r\n  |   |\r\n  O   |\r\n      |\r\n      |\r\n      |\r\n=========",
+                                                               "+---+\r\n  |   |\r\n  O   |\r\n  |   |\r\n      |\r\n      |\r\n=========",
+                                                               "+---+\r\n  |   |\r\n  O   |\r\n /|   |\r\n      |\r\n      |\r\n=========",
+                                                               "+---+\r\n  |   |\r\n  O   |\r\n /|\\  |\r\n      |\r\n      |\r\n=========",
+                                                               "+---+\r\n  |   |\r\n  O   |\r\n /|\\  |\r\n /    |\r\n      |\r\n=========",
+                                                               "+---+\r\n  |   |\r\n  O   |\r\n /|\\  |\r\n / \\  |\r\n      |\r\n=========",
+    };
+        
+    public string ShowHangman (int pictureNumber)
+    {
+        return hangManGraphic[pictureNumber];
+    }
+
+}
